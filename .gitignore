@@ -1,0 +1,5 @@
+*.o
+*.a
+test/test_runner
+.DS_Store
+node_modules/

@@ -1,0 +1,30 @@
+{
+  "name": "wasi-termios-brsh",
+  "version": "1.0.0",
+  "description": "Drop-in POSIX termios and terminal I/O shim for wasi-libc and brsh WebAssembly environments",
+  "main": "src/termios.c",
+  "scripts": {
+    "test": "make test",
+    "clean": "make clean"
+  },
+  "keywords": [
+    "wasi",
+    "termios",
+    "brsh",
+    "webassembly",
+    "wasi-libc",
+    "posix",
+    "terminal",
+    "ioctl"
+  ],
+  "author": "Eliot Stocker <eliot.stocker@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eliotstocker/wasi-termios-brsh.git"
+  },
+  "bugs": {
+    "url": "https://github.com/eliotstocker/wasi-termios-brsh/issues"
+  },
+  "homepage": "https://github.com/eliotstocker/wasi-termios-brsh#readme"
+}
