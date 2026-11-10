@@ -156,13 +156,22 @@ WEAK pid_t tcgetsid(int fd) {
 /*
  * Exported function so host environments (such as brsh) can update
  * terminal dimensions dynamically on window resize.
+ * If ncurses is linked in the application, calling weak resizeterm
+ * automatically updates curses internal structures.
  */
+WEAK int resizeterm(int lines, int columns) {
+    (void)lines;
+    (void)columns;
+    return -1;
+}
+
 #if defined(__wasm__)
 __attribute__((export_name("set_terminal_size")))
 #endif
 WEAK void set_terminal_size(int cols, int rows) {
     if (cols > 0) g_winsize.ws_col = (unsigned short)cols;
     if (rows > 0) g_winsize.ws_row = (unsigned short)rows;
+    resizeterm(rows, cols);
 }
 
 /*
