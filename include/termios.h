@@ -162,6 +162,11 @@ int  tcdrain(int fd);
 int  tcflush(int fd, int queue_selector);
 int  tcflow(int fd, int action);
 
+int   cfsetspeed(struct termios *t, speed_t speed);
+pid_t tcgetpgrp(int fd);
+int   tcsetpgrp(int fd, pid_t pgrpid);
+pid_t tcgetsid(int fd);
+
 #ifdef __cplusplus
 }
 #endif

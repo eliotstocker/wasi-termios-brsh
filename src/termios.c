@@ -130,8 +130,43 @@ WEAK int tcflow(int fd, int action) {
     return 0;
 }
 
+WEAK int cfsetspeed(struct termios *t, speed_t speed) {
+    if (!t) { errno = EINVAL; return -1; }
+    t->__c_ispeed = speed;
+    t->__c_ospeed = speed;
+    return 0;
+}
+
+WEAK pid_t tcgetpgrp(int fd) {
+    (void)fd;
+    return 1;
+}
+
+WEAK int tcsetpgrp(int fd, pid_t pgrpid) {
+    (void)fd;
+    (void)pgrpid;
+    return 0;
+}
+
+WEAK pid_t tcgetsid(int fd) {
+    (void)fd;
+    return 1;
+}
+
 /*
- * Terminal ioctl handling (TIOCGWINSZ, TIOCSWINSZ, FIONBIO)
+ * Exported function so host environments (such as brsh) can update
+ * terminal dimensions dynamically on window resize.
+ */
+#if defined(__wasm__)
+__attribute__((export_name("set_terminal_size")))
+#endif
+WEAK void set_terminal_size(int cols, int rows) {
+    if (cols > 0) g_winsize.ws_col = (unsigned short)cols;
+    if (rows > 0) g_winsize.ws_row = (unsigned short)rows;
+}
+
+/*
+ * Terminal ioctl handling (TIOCGWINSZ, TIOCSWINSZ, FIONREAD, FIONBIO)
  */
 WEAK int ioctl(int fd, unsigned long request, ...) {
     va_list ap;
@@ -167,6 +202,14 @@ WEAK int ioctl(int fd, unsigned long request, ...) {
             return 0;
         }
 
+        case FIONREAD: {
+            int *nbytes = va_arg(ap, int *);
+            va_end(ap);
+            if (!nbytes) { errno = EINVAL; return -1; }
+            *nbytes = 0;
+            return 0;
+        }
+
         case FIONBIO: {
             const int *opt = va_arg(ap, const int *);
             va_end(ap);
@@ -182,3 +225,4 @@ WEAK int ioctl(int fd, unsigned long request, ...) {
             return -1;
     }
 }
+

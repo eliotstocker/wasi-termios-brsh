@@ -73,6 +73,32 @@ int main(void) {
     assert(tcsendbreak(0, 0) == 0);
     printf("  [PASS] tcflush, tcdrain, tcsendbreak stubs\n");
 
+    /* 8. Test cfsetspeed, tcgetpgrp, tcsetpgrp, tcgetsid */
+    rc = cfsetspeed(&t, B57600);
+    assert(rc == 0);
+    assert(cfgetispeed(&t) == B57600);
+    assert(cfgetospeed(&t) == B57600);
+    assert(tcgetpgrp(0) > 0);
+    assert(tcsetpgrp(0, 1) == 0);
+    assert(tcgetsid(0) > 0);
+    printf("  [PASS] cfsetspeed, tcgetpgrp, tcsetpgrp, tcgetsid\n");
+
+    /* 9. Test ioctl FIONREAD */
+    int bytes_avail = -1;
+    rc = ioctl(0, FIONREAD, &bytes_avail);
+    assert(rc == 0);
+    assert(bytes_avail == 0);
+    printf("  [PASS] ioctl FIONREAD\n");
+
+    /* 10. Test dynamic set_terminal_size */
+    extern void set_terminal_size(int cols, int rows);
+    set_terminal_size(120, 45);
+    rc = ioctl(0, TIOCGWINSZ, &ws);
+    assert(rc == 0);
+    assert(ws.ws_col == 120);
+    assert(ws.ws_row == 45);
+    printf("  [PASS] dynamic set_terminal_size (120x45)\n");
+
     printf("\nAll wasi-termios-brsh tests passed successfully!\n");
     return 0;
 }
