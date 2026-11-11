@@ -99,6 +99,26 @@ int main(void) {
     assert(ws.ws_row == 45);
     printf("  [PASS] dynamic set_terminal_size (120x45)\n");
 
+    /* 11. Test get_termios_lflag across cbreak (~ICANON, ISIG on) and raw (~ISIG) modes */
+    extern unsigned int get_termios_lflag(void);
+    rc = tcgetattr(0, &t);
+    assert(rc == 0);
+    t.c_lflag |= (ISIG | ICANON | ECHO);
+    assert(tcsetattr(0, TCSANOW, &t) == 0);
+    assert((get_termios_lflag() & ISIG) != 0);
+
+    /* Cbreak mode (like doom-ascii): ~ICANON & ~ECHO, but ISIG stays set */
+    t.c_lflag &= ~(ICANON | ECHO);
+    assert(tcsetattr(0, TCSANOW, &t) == 0);
+    assert((get_termios_lflag() & ISIG) != 0);
+    assert((get_termios_lflag() & (ICANON | ECHO)) == 0);
+
+    /* Raw mode (like nano / cfmakeraw): ISIG cleared */
+    cfmakeraw(&t);
+    assert(tcsetattr(0, TCSANOW, &t) == 0);
+    assert((get_termios_lflag() & ISIG) == 0);
+    printf("  [PASS] get_termios_lflag distinguishes cbreak (ISIG) from raw (~ISIG)\n");
+
     printf("\nAll wasi-termios-brsh tests passed successfully!\n");
     return 0;
 }

@@ -54,6 +54,10 @@ struct termios {
 #define VLNEXT   15
 #define VEOL2    16
 
+#ifndef _POSIX_VDISABLE
+#define _POSIX_VDISABLE '\0'
+#endif
+
 /* c_iflag bits */
 #define IGNBRK  0000001
 #define BRKINT  0000002

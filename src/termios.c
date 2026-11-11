@@ -166,12 +166,24 @@ WEAK int resizeterm(int lines, int columns) {
 }
 
 #if defined(__wasm__)
-__attribute__((export_name("set_terminal_size")))
+__attribute__((export_name("set_terminal_size"), used))
 #endif
 WEAK void set_terminal_size(int cols, int rows) {
     if (cols > 0) g_winsize.ws_col = (unsigned short)cols;
     if (rows > 0) g_winsize.ws_row = (unsigned short)rows;
     resizeterm(rows, cols);
+}
+
+/*
+ * Exported function so host environments (such as brsh) can inspect active
+ * termios c_lflag bits (e.g. ISIG, ICANON, ECHO) and distinguish cbreak mode
+ * (~ICANON with ISIG enabled, where Ctrl+C sends SIGINT) from raw mode (~ISIG).
+ */
+#if defined(__wasm__)
+__attribute__((export_name("get_termios_lflag"), used))
+#endif
+WEAK unsigned int get_termios_lflag(void) {
+    return (unsigned int)g_termios.c_lflag;
 }
 
 /*

@@ -1,6 +1,6 @@
 {
   "name": "wasi-termios-brsh",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Drop-in POSIX termios and terminal I/O shim for wasi-libc and brsh WebAssembly environments",
   "main": "src/termios.c",
   "scripts": {
